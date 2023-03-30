@@ -77,17 +77,17 @@ class Shingle:
             # print(files, len(files))
 
 
-    def createMatrix(self):
-        self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
-        for i, shingle in enumerate(self.shingle_dict.keys()):
-            for docID in self.shingle_dict[shingle]:
-                self.shingleDocMatrix[i][docID] = True
+    # def createMatrix(self):
+    #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
+    #     for i, shingle in enumerate(self.shingle_dict.keys()):
+    #         for docID in self.shingle_dict[shingle]:
+    #             self.shingleDocMatrix[i][docID] = True
     
 class MinHash:
-    def __init__(self, shingleDocMatrix, numofHashFuncs):
-        self.maxShingles = shingleDocMatrix.shape[0]
+    def __init__(self, shingle_dict, numofDocs ,numofHashFuncs):
+        self.maxShingles = len(shingle_dict)
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
-        self.signatureMatrix = np.full((numofHashFuncs, shingleDocMatrix.shape[1]), self.nextPrime) 
+        self.signatureMatrix = np.full((numofHashFuncs, numofDocs), self.nextPrime) 
         self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
         self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
         
