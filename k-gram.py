@@ -45,19 +45,28 @@ class Reader:
 class Shingle:
     
     def __init__(self) -> None:
+        """Intialize the shingle class
+        """
         self.shingle_dict = dict()
-        # self.single_doc_mat = np.zeroes(())
-        # self.shingleDocMatrix = None
         
-    
     def make_kgrams(self, text,  k):
+        """Make chracterwise k-grams of length k from the text
+
+        Args:
+            text (str): k-grams are made from this text
+            k (int): length of characterwise k-grams
+
+        Returns:
+            set(): set of chracaterwise k-grams of length k made from text
+        """
         kgrams = set()
         for i in range(len(text) - k + 1):
             kgrams.add(text[i:i+k])
         return kgrams
 
-
     def createShingleMapping(self):
+        """Cretaes a dictionary of k-shingles and the list of documents they are present in
+        """
         for root,dir,files in os.walk('Originals'):
             self.numDocs = len(files)
             for i, file in enumerate(files):
@@ -72,10 +81,6 @@ class Shingle:
                         self.shingle_dict[k_gram].append(i)
                     else:
                         self.shingle_dict[k_gram] = [i]
-                # print(self.shingle_dict)
-                # print(k_grams)
-            # print(files, len(files))
-
 
     # def createMatrix(self):
     #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
@@ -84,82 +89,121 @@ class Shingle:
     #             self.shingleDocMatrix[i][docID] = True
     
 class MinHash:
+    """Class to make minhash signatures for the documents
+    """
+    
     def __init__(self, shingle_dict, numofDocs ,numofHashFuncs):
+        """Intialize the minhash class
+
+        Args:
+            shingle_dict (dict{}): Dictionary of k-shingles and the list of documents they are present in   
+            numofDocs (int): total number of dcouments in the dataset
+            numofHashFuncs (int): number of hash functions to be used to make the minhash signatures
+        """
         self.maxShingles = len(shingle_dict)
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
         self.signatureMatrix = np.full((numofHashFuncs, numofDocs), self.nextPrime) 
         self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
         self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
         
-    
-    def miller_rabin(n, k):
-
-        # Implementation uses the Miller-Rabin Primality Test
-        # The optimal number of rounds for this test is 40
-        # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
-        # for justification
-
-        if n == 2:
-            return True
-
-        elif n % 2 == 0:
-            return False
-
-        r, s = 0, n - 1
-        while s % 2 == 0:
-            r += 1
-            s //= 2
-        for _ in range(k):
-            a = random.randrange(2, n - 1)
-            x = pow(a, s, n)
-            if x == 1 or x == n - 1:
-                continue
-            for _ in range(r - 1):
-                x = pow(x, 2, n)
-                if x == n - 1:
-                    break
-            else:
-                return False
-        return True
-    
     def getSmallestPrime(self, n):
+        """Get the smallest prime number greater than n
+        
+        Args:
+            n (int): number greater than which the smallest prime number is to be found
+            
+        Returns:
+            int: smallest prime number greater than n
+        """
+        def miller_rabin(n, k):
+            """Implements Probabilistic Primality Test using Miller-Rabin Test
+
+            Args:
+                n (int): primality of this number is to be tested
+                k (int): Miller-Rabin test is run for k iterations
+
+            Returns:
+                bool: False if n is composite, True if n is probably prime
+            """
+            # Implementation uses the Miller-Rabin Primality Test
+            # The optimal number of rounds for this test is 40
+            # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
+            # for justification
+
+            if n == 2:
+                return True
+
+            elif n % 2 == 0:
+                return False
+
+            r, s = 0, n - 1
+            while s % 2 == 0:
+                r += 1
+                s //= 2
+            for _ in range(k):
+                a = random.randrange(2, n - 1)
+                x = pow(a, s, n)
+                if x == 1 or x == n - 1:
+                    continue
+                for _ in range(r - 1):
+                    x = pow(x, 2, n)
+                    if x == n - 1:
+                        break
+                else:
+                    return False
+            return True
+        
         while True:
-            if self.miller_rabin(n, 40):
+            if miller_rabin(n, 40):
                 return n
             n += 1
             
     def pickRandomCoeffs(self, k):
-        # Create a list of 'k' random values.
+        """Pick k random coefficients for the random hash functions.
+        
+        Args:
+            k (int): number of random coefficients to be picked
+        
+        Returns:
+            list: list of k random coefficients
+        """
         randList = []
         while k > 0:
-            # Get a random shingle ID.
             randIndex = random.randint(1, self.maxShingles) 
-        
-            # Ensure that each random number is unique.
+            
+            # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
             while (randIndex in randList  and gcd(randIndex, self.nextPrime) != 1):
                 randIndex = random.randint(1, self.maxShingles) 
             
-            # Add the random number to the list.
             randList.append(randIndex)
             k = k - 1
             
         return randList
     
     def Hash(self, shingleIndex, HashFuncNum):
-        # Evaluate the hash function.
+        """Hash the shingle to a bucket
+        
+        Args:
+            shingleIndex (int): index of the shingle in the shingle dictionary
+            HashFuncNum (int): number of the MinHash function to be used
+            
+        Returns:
+            int: bucket number to which the shingle is hashed for given MinHash function
+        """
         return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.nextPrime
     
     def fillSignatureMatrix(self, shingle_dict):
+        """Fills the signature matrix with the minhash signatures
+
+        Args:
+            shingle_dict (dict{}): Dictionary of k-shingles and the list of documents they are present in
+        """
         for i, shingle in enumerate(shingle_dict.keys()):
             for docID in shingle_dict[shingle]:
-                # _temp = self.Hash(i, 0)
-                # if self.signatureMatrix[j][docID] == 0:
                 for minHashNum in range(self.numofHashFuncs):
                     _temp = self.Hash(i, minHashNum)
                     if self.signatureMatrix[minHashNum][docID] > _temp:
                         self.signatureMatrix[minHashNum][docID] = _temp
-        # print(self.signatureMatrix)
-        # return self.signatureMatrix
         
         
     
