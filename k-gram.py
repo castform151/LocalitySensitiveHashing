@@ -49,7 +49,7 @@ class Shingle:
         """
         self.shingle_dict = dict()
         
-    def make_kgrams(self, text,  k):
+    def make_kgrams(self, text,  k = 9):
         """Make chracterwise k-grams of length k from the text
 
         Args:
@@ -100,6 +100,9 @@ class MinHash:
             numofDocs (int): total number of dcouments in the dataset
             numofHashFuncs (int): number of hash functions to be used to make the minhash signatures
         """
+        self.shingle_dict = shingle_dict
+        self.numofDocs = numofDocs
+        self.numofHashFuncs = numofHashFuncs
         self.maxShingles = len(shingle_dict)
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
         self.signatureMatrix = np.full((numofHashFuncs, numofDocs), self.nextPrime) 
@@ -192,24 +195,101 @@ class MinHash:
         """
         return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.nextPrime
     
-    def fillSignatureMatrix(self, shingle_dict):
+    def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
-
-        Args:
-            shingle_dict (dict{}): Dictionary of k-shingles and the list of documents they are present in
         """
-        for i, shingle in enumerate(shingle_dict.keys()):
-            for docID in shingle_dict[shingle]:
+        for i, shingle in enumerate(self.shingle_dict.keys()):
+            for docID in self.shingle_dict[shingle]:
                 for minHashNum in range(self.numofHashFuncs):
                     _temp = self.Hash(i, minHashNum)
                     if self.signatureMatrix[minHashNum][docID] > _temp:
                         self.signatureMatrix[minHashNum][docID] = _temp
         
+class LSH:
+    """Class to implement the LSH algorithm to find the similar documents
+    """
+    def __init__(self, rowsperBand, numofBands, signetureMatrix) -> None:
+        """Intialises LSH class
+
+        Args:
+            rowsperBand (int): number of rows per band in Signature Matrix
+            numofBands (int): Total number of bands in Signature Matrix
+            signetureMatrix (np.ndarray): Signature matrix of all the documents in the dataset
+        """
+        self.rowsperBand = rowsperBand
+        self.numofBands = numofBands
+        self.signatureMatrix = signetureMatrix
         
+    def plagiarismCheck(self, threshold, querySignature):
+        """Checks for plagiarism of query documnet in the dataset
+
+        Args:
+            threshold (float): threshold for similarity between query document and the documents in the dataset
+            querySignature (np.ndarray): signature vector of the query document
+        """
+        simBand = 0
+        for i in range(self.signatureMatrix.shape[1]):
+            simBand = 0
+            for j in range(self.numofBands):
+                if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand,i], querySignature[j:j+self.rowsperBand]):
+                    simBand += 1
+            print(simBand/self.numofBands)
+            if simBand/self.numofBands >= threshold:
+                print("Plagiariasm Detected with Document {i}")
+ 
+class Query:
+    """Class to generate the query shingle vector and the query signature
+    """
+    def __init__(self, query_path, Shingle, MinHash) -> None:
+        """Intialize the query class
+
+        Args:
+            query_path (str): _relative path to the query document
+            Shingle (Shingle): Instance of Shingle class
+            MinHash (MinHash): Instance of MinHash class
+        """
+        query_file = open(query_path, encoding='utf8')
+        self.query = query_file.read()
+        self.ShingleObj = Shingle
+        self.MinHashObj = MinHash
+        
+    def getQueryShingleVec(self):
+        """Generate the shingle vector for the query
+
+        Returns:
+            list[]: Returns the indices of the shingles in the shingle dictionary that are present on query document
+        """
+        queryShingles = self.ShingleObj.make_kgrams(self.query, 9)
+        shingle_vec = []
+        for i, shingle in enumerate(self.ShingleObj.shingle_dict.keys()):
+            if shingle in queryShingles:
+                shingle_vec.append(i)
+        return shingle_vec
     
-    
-# shingle_obj = Shingle()
-# shingle_obj.createShingleMapping()
-# shin_dict = shingle_obj.shingle_dict
+    def getQuerySignature(self):
+        """Generates Signature for the query document
+
+        Returns:
+            np.ndarray: Returns the signature vector for the query document
+        """
+        queryShingleVec = self.getQueryShingleVec()
+        querySignature = np.full((self.MinHashObj.numofHashFuncs), self.MinHashObj.nextPrime)
+        for i in queryShingleVec:
+            for j in range(self.MinHashObj.numofHashFuncs):
+                _temp = self.MinHashObj.Hash(i, j)
+                if querySignature[j] > _temp:
+                    querySignature[j] = _temp
+        print(querySignature)
+        return querySignature       
+        
+        
+shingle_obj = Shingle()
+shingle_obj.createShingleMapping()
+shin_dict = shingle_obj.shingle_dict
+min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
+min_hash_obj.fillSignatureMatrix()
+print(min_hash_obj.signatureMatrix)
+lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
+query_obj = Query("./rsa_property_owners_policy_wording.txt", shingle_obj, min_hash_obj)
+lsh_obj.plagiarismCheck(0.5, query_obj.getQuerySignature())
 # print(shin_dict)
-# reader_obj = Reader()
