@@ -175,7 +175,7 @@ class MinHash:
             randIndex = random.randint(1, self.maxShingles) 
             
             # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
-            while (randIndex in randList  and gcd(randIndex, self.nextPrime) != 1):
+            while (randIndex in randList):#  and gcd(randIndex, self.nextPrime) != 1):
                 randIndex = random.randint(1, self.maxShingles) 
             
             randList.append(randIndex)
@@ -198,7 +198,7 @@ class MinHash:
     def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
         """
-        for i, shingle in enumerate(sorted(self.shingle_dict.keys())):
+        for i, shingle in enumerate((self.shingle_dict.keys())):
             for docID in self.shingle_dict[shingle]:
                 for minHashNum in range(self.numofHashFuncs):
                     _temp = self.Hash(i, minHashNum)
@@ -263,10 +263,10 @@ class Query:
         """
         queryShingles = self.ShingleObj.make_kgrams(self.query, 9)
         shingle_vec = []
-        for i, shingle in enumerate(sorted(self.ShingleObj.shingle_dict.keys())):
+        for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
                 shingle_vec.append(i)
-        print(shingle_vec)
+        # print(shingle_vec)
         return shingle_vec
     
     def getQuerySignature(self):
@@ -288,9 +288,11 @@ class Query:
         
 shingle_obj = Shingle()
 shingle_obj.createShingleMapping()
+print("Shingle mapping created")
 shin_dict = shingle_obj.shingle_dict
 min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
 min_hash_obj.fillSignatureMatrix()
+print("fill signature matrix")
 # print(min_hash_obj.signatureMatrix)
 lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
 query_obj = Query("./rsa_property_owners_policy_wording.txt", shingle_obj, min_hash_obj)
