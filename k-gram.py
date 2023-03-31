@@ -198,7 +198,7 @@ class MinHash:
     def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
         """
-        for i, shingle in enumerate(self.shingle_dict.keys()):
+        for i, shingle in enumerate(sorted(self.shingle_dict.keys())):
             for docID in self.shingle_dict[shingle]:
                 for minHashNum in range(self.numofHashFuncs):
                     _temp = self.Hash(i, minHashNum)
@@ -233,9 +233,9 @@ class LSH:
             for j in range(self.numofBands):
                 if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand,i], querySignature[j:j+self.rowsperBand]):
                     simBand += 1
-            print(simBand/self.numofBands)
+            # print(simBand/self.numofBands)
             if simBand/self.numofBands >= threshold:
-                print("Plagiariasm Detected with Document {i}")
+                print(f"Plagiariasm Detected with Document {i}")
  
 class Query:
     """Class to generate the query shingle vector and the query signature
@@ -249,7 +249,9 @@ class Query:
             MinHash (MinHash): Instance of MinHash class
         """
         query_file = open(query_path, encoding='utf8')
-        self.query = query_file.read()
+        reader_obj = Reader()
+        preprocessed_text = reader_obj.preprocess_data(query_file.read())
+        self.query = preprocessed_text
         self.ShingleObj = Shingle
         self.MinHashObj = MinHash
         
@@ -257,13 +259,14 @@ class Query:
         """Generate the shingle vector for the query
 
         Returns:
-            list[]: Returns the indices of the shingles in the shingle dictionary that are present on query document
+            list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
         queryShingles = self.ShingleObj.make_kgrams(self.query, 9)
         shingle_vec = []
-        for i, shingle in enumerate(self.ShingleObj.shingle_dict.keys()):
+        for i, shingle in enumerate(sorted(self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
                 shingle_vec.append(i)
+        print(shingle_vec)
         return shingle_vec
     
     def getQuerySignature(self):
@@ -279,7 +282,7 @@ class Query:
                 _temp = self.MinHashObj.Hash(i, j)
                 if querySignature[j] > _temp:
                     querySignature[j] = _temp
-        print(querySignature)
+        # print(querySignature)
         return querySignature       
         
         
@@ -288,7 +291,7 @@ shingle_obj.createShingleMapping()
 shin_dict = shingle_obj.shingle_dict
 min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
 min_hash_obj.fillSignatureMatrix()
-print(min_hash_obj.signatureMatrix)
+# print(min_hash_obj.signatureMatrix)
 lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
 query_obj = Query("./rsa_property_owners_policy_wording.txt", shingle_obj, min_hash_obj)
 lsh_obj.plagiarismCheck(0.5, query_obj.getQuerySignature())
