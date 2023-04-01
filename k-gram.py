@@ -6,6 +6,7 @@ import re
 from nltk import word_tokenize
 import unicodedata
 from math import gcd
+from time import time
 
 class Document:
 
@@ -67,6 +68,7 @@ class Shingle:
     def createShingleMapping(self):
         """Cretaes a dictionary of k-shingles and the list of documents they are present in
         """
+        t0 = time()
         for root,dir,files in os.walk('Originals'):
             self.numDocs = len(files)
             for i, file in enumerate(files):
@@ -81,7 +83,7 @@ class Shingle:
                         self.shingle_dict[k_gram].append(i)
                     else:
                         self.shingle_dict[k_gram] = [i]
-
+        print("Time taken to create shingle mapping: ", time() - t0)
     # def createMatrix(self):
     #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
     #     for i, shingle in enumerate(self.shingle_dict.keys()):
@@ -155,12 +157,14 @@ class MinHash:
                 else:
                     return False
             return True
-        
+        t0 = time()
         while True:
             if miller_rabin(n, 40):
+                print("Time taken to find next prime: ", time() - t0)
                 return n
             n += 1
-            
+        
+          
     def pickRandomCoeffs(self, k):
         """Pick k random coefficients for the random hash functions.
         
@@ -170,17 +174,18 @@ class MinHash:
         Returns:
             list: list of k random coefficients
         """
+        t0 = time()
         randList = []
         while k > 0:
             randIndex = random.randint(1, self.maxShingles) 
             
             # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
-            while (randIndex in randList):#  and gcd(randIndex, self.nextPrime) != 1):
+            while (randIndex in randList and gcd(randIndex, self.nextPrime) != 1):
                 randIndex = random.randint(1, self.maxShingles) 
             
             randList.append(randIndex)
             k = k - 1
-            
+        print("Time taken to pick random coefficients: ", time() - t0)   
         return randList
     
     def Hash(self, shingleIndex, HashFuncNum):
@@ -198,12 +203,14 @@ class MinHash:
     def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
         """
+        t0 = time()
         for i, shingle in enumerate((self.shingle_dict.keys())):
             for docID in self.shingle_dict[shingle]:
                 for minHashNum in range(self.numofHashFuncs):
                     _temp = self.Hash(i, minHashNum)
                     if self.signatureMatrix[minHashNum][docID] > _temp:
                         self.signatureMatrix[minHashNum][docID] = _temp
+        print("Time taken to fill signature matrix: ", time() - t0)
         
 class LSH:
     """Class to implement the LSH algorithm to find the similar documents
