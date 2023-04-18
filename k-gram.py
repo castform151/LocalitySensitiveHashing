@@ -64,6 +64,8 @@ class Shingle:
         """Intialize the shingle class
         """
         self.shingle_dict = dict()
+        self.createShingleMapping()
+        self.createMatrix()
 
     def make_kgrams(self, text,  k=9):
         """Make chracterwise k-grams of length k from the text
@@ -111,6 +113,7 @@ class Shingle:
                     self.shingle_dict[k_gram].append(i)
                 else:
                     self.shingle_dict[k_gram] = [i]
+        print(self.shingle_dict)
         print("Time taken to create shingle matrix: ", time() - t0)
 
     def getJaccrdSimilarity(self, threshold, queryShingle):
@@ -131,11 +134,11 @@ class Shingle:
             print("No similar document found using Jaccard")
         print("Time taken to find similarity using Jaccard: ", time() - t0)
 
-    # def createMatrix(self):
-    #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
-    #     for i, shingle in enumerate(self.shingle_dict.keys()):
-    #         for docID in self.shingle_dict[shingle]:
-    #             self.shingleDocMatrix[i][docID] = True
+    def createMatrix(self):
+        self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
+        for i, shingle in enumerate(self.shingle_dict.keys()):
+            for docID in self.shingle_dict[shingle]:
+                self.shingleDocMatrix[i][docID] = True
 
 
 class MinHash:
@@ -155,10 +158,12 @@ class MinHash:
         self.numofHashFuncs = numofHashFuncs
         self.maxShingles = len(shingle_dict)
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
-        self.signatureMatrix = np.full(
-            (numofHashFuncs, numofDocs), self.nextPrime)
+        # self.signatureMatrix = np.full(
+        #     (numofHashFuncs, numofDocs), self.nextPrime)
         # self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
         # self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
+        self.signatureMatrix = np.full(
+             (numofHashFuncs, numofDocs), self.maxShingles)
         self.coeffA = self.true_permutation(numofHashFuncs)
         self.coeffB = self.true_permutation(numofHashFuncs)
 
@@ -353,6 +358,7 @@ class Query:
             list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
         queryShingles = self.ShingleObj.make_kgrams(self.query, 2)
+        print(queryShingles)
         self.shingle_vec = []
         for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
@@ -380,7 +386,7 @@ class Query:
 
 if __name__ == "__main__":
     shingle_obj = Shingle()
-    shingle_obj.createShingleMapping()
+    # shingle_obj.createShingleMapping()
     print("Shingle mapping created")
     shin_dict = shingle_obj.shingle_dict
     min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
