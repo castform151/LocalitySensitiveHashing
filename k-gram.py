@@ -344,18 +344,18 @@ class Query:
         # print(querySignature)
         return querySignature       
         
-        
-shingle_obj = Shingle()
-shingle_obj.createShingleMapping()
-print("Shingle mapping created")
-shin_dict = shingle_obj.shingle_dict
-min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
-min_hash_obj.fillSignatureMatrix()
-print("fill signature matrix")
-# print(min_hash_obj.signatureMatrix)
-lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
-for q in range(5):
-    query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
-    lsh_obj.getSignatureSimilarity(0.5, query_obj.getQuerySignature())
-    shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
-# print(shin_dict)
+if __name__ == "__main__":     
+    shingle_obj = Shingle()
+    shingle_obj.createShingleMapping()
+    print("Shingle mapping created")
+    shin_dict = shingle_obj.shingle_dict
+    min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
+    min_hash_obj.fillSignatureMatrix()
+    print("fill signature matrix")
+    # print(min_hash_obj.signatureMatrix)
+    lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
+    for q in range(5):
+        query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
+        lsh_obj.getSignatureSimilarity(0.5, query_obj.getQuerySignature())
+        shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
+    # print(shin_dict)
