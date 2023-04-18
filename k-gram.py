@@ -118,6 +118,7 @@ class Shingle:
 
     def getJaccrdSimilarity(self, threshold, queryShingle):
         t0 = time()
+        
         global flag
         flag = 0
         query_shin_set = set(queryShingle)
