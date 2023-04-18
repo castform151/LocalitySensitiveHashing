@@ -84,6 +84,20 @@ class Shingle:
                     else:
                         self.shingle_dict[k_gram] = [i]
         print("Time taken to create shingle mapping: ", time() - t0)
+        
+    def getJaccrdSimilarity(self, threshold, queryShingle):
+        query_shin_set = set(queryShingle)
+        print("Using Jaccard Similarity on Shingle Matrix")
+        for i ,j in self.shingle_dict.items():
+            doc_shin_set = set(j)
+            aib = len(query_shin_set.intersection(doc_shin_set))
+            aub = len(query_shin_set.union(doc_shin_set))
+            sim =  aib/aub
+            if sim >= threshold:
+                print(f"Similarity of {sim*100}% with documnet {i}")
+            
+            
+        
     # def createMatrix(self):
     #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
     #     for i, shingle in enumerate(self.shingle_dict.keys()):
@@ -234,6 +248,7 @@ class LSH:
             threshold (float): threshold for similarity between query document and the documents in the dataset
             querySignature (np.ndarray): signature vector of the query document
         """
+        print("Using LSH on Signature Matrix")
         simBand = 0
         for i in range(self.signatureMatrix.shape[1]):
             simBand = 0
@@ -241,8 +256,9 @@ class LSH:
                 if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand,i], querySignature[j:j+self.rowsperBand]):
                     simBand += 1
             # print(simBand/self.numofBands)
-            if simBand/self.numofBands >= threshold:
-                print(f"Plagiariasm Detected with Document {i}")
+            sim = simBand/self.numofBands
+            if sim >= threshold:
+                print(f"Similarity of {sim} with documnet {i}")
  
 class Query:
     """Class to generate the query shingle vector and the query signature
@@ -261,6 +277,7 @@ class Query:
         self.query = preprocessed_text
         self.ShingleObj = Shingle
         self.MinHashObj = MinHash
+        self.getQueryShingleVec()
         
     def getQueryShingleVec(self):
         """Generate the shingle vector for the query
@@ -269,12 +286,12 @@ class Query:
             list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
         queryShingles = self.ShingleObj.make_kgrams(self.query, 9)
-        shingle_vec = []
+        self.shingle_vec = []
         for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
-                shingle_vec.append(i)
+                self.shingle_vec.append(i)
         # print(shingle_vec)
-        return shingle_vec
+        # self.shingle_vec
     
     def getQuerySignature(self):
         """Generates Signature for the query document
@@ -282,9 +299,9 @@ class Query:
         Returns:
             np.ndarray: Returns the signature vector for the query document
         """
-        queryShingleVec = self.getQueryShingleVec()
+        # queryShingleVec = self.getQueryShingleVec()
         querySignature = np.full((self.MinHashObj.numofHashFuncs), self.MinHashObj.nextPrime)
-        for i in queryShingleVec:
+        for i in self.shingle_vec:
             for j in range(self.MinHashObj.numofHashFuncs):
                 _temp = self.MinHashObj.Hash(i, j)
                 if querySignature[j] > _temp:
