@@ -88,7 +88,7 @@ class Shingle:
         #     self.numDocs = len(files)
         #     for i, file in enumerate(files):
         #         # if (file[0] == '7'):
-        #         txt_file = open(os.path.join(root,file),encoding='utf8')
+        #         txt_file = open(os.path.join(root,file),encoding='utf-8')
         #         text = txt_file.read()
         #         reader_obj = Reader()
         #         preprocessed_text = reader_obj.preprocess_data(text)
@@ -98,14 +98,14 @@ class Shingle:
         #                 self.shingle_dict[k_gram].append(i)
         #             else:
         #                 self.shingle_dict[k_gram] = [i]
-        file = open('dataset/originals.txt', encoding='utf8')
+        file = open('dataset/originals.txt', encoding='utf-8', errors="ignore")
         str = file.read()
         articles = str.split('END OF DOCUMENT')
         self.numDocs = len(articles)
 
         for i, text in enumerate(articles):
             preprocessed_text = Reader.normalise(text)
-            k_grams = self.make_kgrams(preprocessed_text, 9)
+            k_grams = self.make_kgrams(preprocessed_text, 2)
             for k_gram in k_grams:
                 if k_gram in self.shingle_dict.keys():
                     self.shingle_dict[k_gram].append(i)
@@ -157,8 +157,10 @@ class MinHash:
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
         self.signatureMatrix = np.full(
             (numofHashFuncs, numofDocs), self.nextPrime)
-        self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
-        self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
+        # self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
+        # self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
+        self.coeffA = self.true_permutation(numofHashFuncs)
+        self.coeffB = self.true_permutation(numofHashFuncs)
 
     def getSmallestPrime(self, n):
         """Get the smallest prime number greater than n
@@ -209,7 +211,7 @@ class MinHash:
         t0 = time()
         while True:
             if miller_rabin(n, 40):
-                print("Time taken to find next prime: ", time() - t0)
+                print(f"Time taken to find next prime {n}: ", time() - t0)
                 return n
             n += 1
 
@@ -234,6 +236,23 @@ class MinHash:
             randList.append(randIndex)
             k = k - 1
         print("Time taken to pick random coefficients: ", time() - t0)
+        print(randList)
+        return randList
+
+    def true_permutation(self, k):
+        t0 = time()
+        randList = []
+        while k > 0:
+            randIndex = random.randint(1, self.maxShingles)
+
+            # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
+            while (randIndex in randList and gcd(randIndex, self.maxShingles) != 1):
+                randIndex = random.randint(1, self.maxShingles)
+
+            randList.append(randIndex)
+            k = k - 1
+        print("Time taken to pick random coefficients: ", time() - t0)
+        print(randList)
         return randList
 
     def Hash(self, shingleIndex, HashFuncNum):
@@ -246,7 +265,8 @@ class MinHash:
         Returns:
             int: bucket number to which the shingle is hashed for given MinHash function
         """
-        return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.nextPrime
+        # return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.nextPrime
+        return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.maxShingles
 
     def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
@@ -318,7 +338,7 @@ class Query:
         """
         query_path = query_path + os.listdir(query_path)[q]
         print(f"For {query_path}")
-        query_file = open(query_path, encoding='utf8')
+        query_file = open(query_path, encoding='utf-8', errors='ignore')
         # reader_obj = Reader()
         # preprocessed_text = reader_obj.preprocess_data(query_file.read())
         self.query = Reader.normalise(query_file.read())
@@ -332,7 +352,7 @@ class Query:
         Returns:
             list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
-        queryShingles = self.ShingleObj.make_kgrams(self.query, 9)
+        queryShingles = self.ShingleObj.make_kgrams(self.query, 2)
         self.shingle_vec = []
         for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
@@ -368,8 +388,10 @@ if __name__ == "__main__":
     print("fill signature matrix")
     # print(min_hash_obj.signatureMatrix)
     lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
+    threshold = 0.5
     for q in range(5):
         query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
-        lsh_obj.getSignatureSimilarity(0.5, query_obj.getQuerySignature())
-        shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
+        lsh_obj.getSignatureSimilarity(
+            threshold, query_obj.getQuerySignature())
+        shingle_obj.getJaccrdSimilarity(threshold, query_obj.shingle_vec)
     # print(shin_dict)
