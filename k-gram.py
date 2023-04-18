@@ -1,46 +1,62 @@
 import numpy as np
+# import pandas as pd
 import os
 import random
-import string
+# import string
 import re
 from nltk import word_tokenize
-import unicodedata
+# import unicodedata
 from math import gcd
 from time import time
+from nltk.corpus import stopwords
+# from nltk.stem.porter import PorterStemmer
+from nltk.tokenize import word_tokenize
 
-class Document:
+# class Document:
 
-    def similarity(self,doc1,doc2):
-        ctr=0
-        for i in range(len(doc1)):
-            ctr+= doc1[i]==doc2[i]
-        return ctr/len(doc1)
+#     def similarity(self,doc1,doc2):
+#         ctr=0
+#         for i in range(len(doc1)):
+#             ctr+= doc1[i]==doc2[i]
+#         return ctr/len(doc1)
 
 class Reader:
-        
-    def lowercasify(self, data):
-        return data.lower()
-
-
-    def clean_text(self,text):
-        # Remove apostrophes along with other punctuations
-        # translator = str.maketrans('', '', string.punctuation + "’" + '“' + '”')
-        # text = text.translate(translator)
-        # "".join([char for char in text if not self.is_pua(char)])
+    
+    @classmethod
+    def normalise(cls, query):
+        stop_words = set((stopwords.words("english")))
+        query = cls.clean_line(query)
+        tokens = word_tokenize(query.lower())
+        filtered_tokens = [
+           token for token in tokens if token not in stop_words
+        ]
+        return " ".join(filtered_tokens)
+    
+    @classmethod
+    def clean_line(cls, text):
         text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
+        
+    
+    # def lowercasify(self, data):
+    #     return data.lower()
 
-        # Tokenize the cleaned text
-        words = word_tokenize(text)
-        return words
+
+    # def clean_text(self,text):
+    #     text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
+
+    #     # Tokenize the cleaned text
+    #     words = word_tokenize(text)
+        
+    #     return words
     
     
-    def preprocess_data(self, data):
-        clean_data = ''
-        words = self.clean_text(self.lowercasify(data))
-        # print(words)
-        for word in words:
-            clean_data += word + ' '
-        return clean_data
+    # def preprocess_data(self, data):
+    #     clean_data = ''
+    #     words = self.clean_text(self.lowercasify(data))
+    #     # print(words)
+    #     for word in words:
+    #         clean_data += word + ' '
+    #     return clean_data
 
 
 class Shingle:
@@ -69,23 +85,36 @@ class Shingle:
         """Cretaes a dictionary of k-shingles and the list of documents they are present in
         """
         t0 = time()
-        for root,dir,files in os.walk('Originals'):
-            self.numDocs = len(files)
-            for i, file in enumerate(files):
-                # if (file[0] == '7'):
-                txt_file = open(os.path.join(root,file),encoding='utf8')
-                text = txt_file.read()
-                reader_obj = Reader()
-                preprocessed_text = reader_obj.preprocess_data(text)
-                k_grams = self.make_kgrams(preprocessed_text, 9)
-                for k_gram in k_grams:
-                    if k_gram in self.shingle_dict.keys():
-                        self.shingle_dict[k_gram].append(i)
-                    else:
-                        self.shingle_dict[k_gram] = [i]
+        # for root,dir,files in os.walk('Originals'):
+        #     self.numDocs = len(files)
+        #     for i, file in enumerate(files):
+        #         # if (file[0] == '7'):
+        #         txt_file = open(os.path.join(root,file),encoding='utf8')
+        #         text = txt_file.read()
+        #         reader_obj = Reader()
+        #         preprocessed_text = reader_obj.preprocess_data(text)
+        #         k_grams = self.make_kgrams(preprocessed_text, 9)
+        #         for k_gram in k_grams:
+        #             if k_gram in self.shingle_dict.keys():
+        #                 self.shingle_dict[k_gram].append(i)
+        #             else:
+        #                 self.shingle_dict[k_gram] = [i]
+        file = open('dataset/originals.txt', encoding='utf8')
+        str = file.read()
+        articles = str.split('END OF DOCUMENT')
+        
+        for i, text in enumerate(articles):
+            preprocessed_text = Reader.normalise(text)
+            k_grams = self.make_kgrams(preprocessed_text, 9)
+            for k_gram in k_grams:
+                if k_gram in self.shingle_dict.keys():
+                    self.shingle_dict[k_gram].append(i)
+                else:
+                    self.shingle_dict[k_gram] = [i]
         print("Time taken to create shingle mapping: ", time() - t0)
         
     def getJaccrdSimilarity(self, threshold, queryShingle):
+        t0 = time()
         query_shin_set = set(queryShingle)
         print("Using Jaccard Similarity on Shingle Matrix")
         for i ,j in self.shingle_dict.items():
@@ -95,6 +124,7 @@ class Shingle:
             sim =  aib/aub
             if sim >= threshold:
                 print(f"Similarity of {sim*100}% with documnet {i}")
+        print("Time taken to find similarity using Jaccard: ", time() - t0)
             
             
         
@@ -177,8 +207,7 @@ class MinHash:
                 print("Time taken to find next prime: ", time() - t0)
                 return n
             n += 1
-        
-          
+                 
     def pickRandomCoeffs(self, k):
         """Pick k random coefficients for the random hash functions.
         
@@ -267,14 +296,15 @@ class Query:
         """Intialize the query class
 
         Args:
-            query_path (str): _relative path to the query document
+            query_path (str): relative path to the query document
             Shingle (Shingle): Instance of Shingle class
             MinHash (MinHash): Instance of MinHash class
         """
+        query_path = query_path + os.listdir(query_path)[0]
         query_file = open(query_path, encoding='utf8')
-        reader_obj = Reader()
-        preprocessed_text = reader_obj.preprocess_data(query_file.read())
-        self.query = preprocessed_text
+        # reader_obj = Reader()
+        # preprocessed_text = reader_obj.preprocess_data(query_file.read())
+        self.query = Reader.normalise(query_file.read())
         self.ShingleObj = Shingle
         self.MinHashObj = MinHash
         self.getQueryShingleVec()
@@ -319,6 +349,7 @@ min_hash_obj.fillSignatureMatrix()
 print("fill signature matrix")
 # print(min_hash_obj.signatureMatrix)
 lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
-query_obj = Query("./rsa_property_owners_policy_wording.txt", shingle_obj, min_hash_obj)
+query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj)
 lsh_obj.plagiarismCheck(0.5, query_obj.getQuerySignature())
+shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
 # print(shin_dict)
