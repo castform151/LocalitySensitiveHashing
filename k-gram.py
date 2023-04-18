@@ -11,7 +11,7 @@ from time import time
 from nltk.corpus import stopwords
 # from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
-
+flag = 0
 # class Document:
 
 #     def similarity(self,doc1,doc2):
@@ -20,37 +20,35 @@ from nltk.tokenize import word_tokenize
 #             ctr+= doc1[i]==doc2[i]
 #         return ctr/len(doc1)
 
+
 class Reader:
-    
+
     @classmethod
     def normalise(cls, query):
         stop_words = set((stopwords.words("english")))
         query = cls.clean_line(query)
         tokens = word_tokenize(query.lower())
         filtered_tokens = [
-           token for token in tokens if token not in stop_words
+            token for token in tokens if token not in stop_words
         ]
         return " ".join(filtered_tokens)
-    
+
     @classmethod
     def clean_line(cls, text):
         text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
         return text
-        
-    
+
     # def lowercasify(self, data):
     #     return data.lower()
-
 
     # def clean_text(self,text):
     #     text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
 
     #     # Tokenize the cleaned text
     #     words = word_tokenize(text)
-        
+
     #     return words
-    
-    
+
     # def preprocess_data(self, data):
     #     clean_data = ''
     #     words = self.clean_text(self.lowercasify(data))
@@ -61,13 +59,13 @@ class Reader:
 
 
 class Shingle:
-    
+
     def __init__(self) -> None:
         """Intialize the shingle class
         """
         self.shingle_dict = dict()
-        
-    def make_kgrams(self, text,  k = 9):
+
+    def make_kgrams(self, text,  k=9):
         """Make chracterwise k-grams of length k from the text
 
         Args:
@@ -104,7 +102,7 @@ class Shingle:
         str = file.read()
         articles = str.split('END OF DOCUMENT')
         self.numDocs = len(articles)
-        
+
         for i, text in enumerate(articles):
             preprocessed_text = Reader.normalise(text)
             k_grams = self.make_kgrams(preprocessed_text, 9)
@@ -114,33 +112,37 @@ class Shingle:
                 else:
                     self.shingle_dict[k_gram] = [i]
         print("Time taken to create shingle matrix: ", time() - t0)
-        
+
     def getJaccrdSimilarity(self, threshold, queryShingle):
         t0 = time()
+        global flag
+        flag = 0
         query_shin_set = set(queryShingle)
         print("Using Jaccard Similarity on Shingle Matrix")
-        for i ,j in self.shingle_dict.items():
+        for i, j in self.shingle_dict.items():
             doc_shin_set = set(j)
             aib = len(query_shin_set.intersection(doc_shin_set))
             aub = len(query_shin_set.union(doc_shin_set))
-            sim =  aib/aub
+            sim = aib/aub
             if sim >= threshold:
+                flag = 1
                 print(f"Similarity of {sim*100}% with documnet {i}")
+        if flag == 0:
+            print("No similar document found using Jaccard")
         print("Time taken to find similarity using Jaccard: ", time() - t0)
-            
-            
-        
+
     # def createMatrix(self):
     #     self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
     #     for i, shingle in enumerate(self.shingle_dict.keys()):
     #         for docID in self.shingle_dict[shingle]:
     #             self.shingleDocMatrix[i][docID] = True
-    
+
+
 class MinHash:
     """Class to make minhash signatures for the documents
     """
-    
-    def __init__(self, shingle_dict, numofDocs ,numofHashFuncs):
+
+    def __init__(self, shingle_dict, numofDocs, numofHashFuncs):
         """Intialize the minhash class
 
         Args:
@@ -153,16 +155,17 @@ class MinHash:
         self.numofHashFuncs = numofHashFuncs
         self.maxShingles = len(shingle_dict)
         self.nextPrime = self.getSmallestPrime(self.maxShingles)
-        self.signatureMatrix = np.full((numofHashFuncs, numofDocs), self.nextPrime) 
+        self.signatureMatrix = np.full(
+            (numofHashFuncs, numofDocs), self.nextPrime)
         self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
         self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
-        
+
     def getSmallestPrime(self, n):
         """Get the smallest prime number greater than n
-        
+
         Args:
             n (int): number greater than which the smallest prime number is to be found
-            
+
         Returns:
             int: smallest prime number greater than n
         """
@@ -209,42 +212,42 @@ class MinHash:
                 print("Time taken to find next prime: ", time() - t0)
                 return n
             n += 1
-                 
+
     def pickRandomCoeffs(self, k):
         """Pick k random coefficients for the random hash functions.
-        
+
         Args:
             k (int): number of random coefficients to be picked
-        
+
         Returns:
             list: list of k random coefficients
         """
         t0 = time()
         randList = []
         while k > 0:
-            randIndex = random.randint(1, self.maxShingles) 
-            
+            randIndex = random.randint(1, self.maxShingles)
+
             # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
             while (randIndex in randList and gcd(randIndex, self.nextPrime) != 1):
-                randIndex = random.randint(1, self.maxShingles) 
-            
+                randIndex = random.randint(1, self.maxShingles)
+
             randList.append(randIndex)
             k = k - 1
-        print("Time taken to pick random coefficients: ", time() - t0)   
+        print("Time taken to pick random coefficients: ", time() - t0)
         return randList
-    
+
     def Hash(self, shingleIndex, HashFuncNum):
         """Hash the shingle to a bucket
-        
+
         Args:
             shingleIndex (int): index of the shingle in the shingle dictionary
             HashFuncNum (int): number of the MinHash function to be used
-            
+
         Returns:
             int: bucket number to which the shingle is hashed for given MinHash function
         """
         return ((self.coeffA[HashFuncNum] * shingleIndex) + self.coeffB[HashFuncNum]) % self.nextPrime
-    
+
     def fillSignatureMatrix(self):
         """Fills the signature matrix with the minhash signatures
         """
@@ -256,10 +259,12 @@ class MinHash:
                     if self.signatureMatrix[minHashNum][docID] > _temp:
                         self.signatureMatrix[minHashNum][docID] = _temp
         print("Time taken to fill signature matrix: ", time() - t0)
-        
+
+
 class LSH:
     """Class to implement the LSH algorithm to find the similar documents
     """
+
     def __init__(self, rowsperBand, numofBands, signetureMatrix) -> None:
         """Initialises LSH class
 
@@ -271,7 +276,7 @@ class LSH:
         self.rowsperBand = rowsperBand
         self.numofBands = numofBands
         self.signatureMatrix = signetureMatrix
-        
+
     def getSignatureSimilarity(self, threshold, querySignature):
         """Checks for plagiarism of query documnet in the dataset
 
@@ -282,21 +287,28 @@ class LSH:
         t0 = time()
         print("Using LSH on Signature Matrix")
         simBand = 0
+        global flag
+        flag = 0
         for i in range(self.signatureMatrix.shape[1]):
             simBand = 0
             for j in range(self.numofBands):
-                if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand,i], querySignature[j:j+self.rowsperBand]):
+                if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand, i], querySignature[j:j+self.rowsperBand]):
                     simBand += 1
             # print(simBand/self.numofBands)
             sim = simBand/self.numofBands
             if sim >= threshold:
+                flag = 1
                 print(f"Similarity of {sim} with documnet {i}")
+        if flag == 0:
+            print("No similar document found using LSH")
         print("Time taken to find similar documents using LSH: ", time() - t0)
- 
+
+
 class Query:
     """Class to generate the query shingle vector and the query signature
     """
-    def __init__(self, query_path, Shingle, MinHash) -> None:
+
+    def __init__(self, query_path, Shingle, MinHash, q) -> None:
         """Intialize the query class
 
         Args:
@@ -313,7 +325,7 @@ class Query:
         self.ShingleObj = Shingle
         self.MinHashObj = MinHash
         self.getQueryShingleVec()
-        
+
     def getQueryShingleVec(self):
         """Generate the shingle vector for the query
 
@@ -327,7 +339,7 @@ class Query:
                 self.shingle_vec.append(i)
         # print(shingle_vec)
         # self.shingle_vec
-    
+
     def getQuerySignature(self):
         """Generates Signature for the query document
 
@@ -335,16 +347,18 @@ class Query:
             np.ndarray: Returns the signature vector for the query document
         """
         # queryShingleVec = self.getQueryShingleVec()
-        querySignature = np.full((self.MinHashObj.numofHashFuncs), self.MinHashObj.nextPrime)
+        querySignature = np.full(
+            (self.MinHashObj.numofHashFuncs), self.MinHashObj.nextPrime)
         for i in self.shingle_vec:
             for j in range(self.MinHashObj.numofHashFuncs):
                 _temp = self.MinHashObj.Hash(i, j)
                 if querySignature[j] > _temp:
                     querySignature[j] = _temp
         # print(querySignature)
-        return querySignature       
-        
-if __name__ == "__main__":     
+        return querySignature
+
+
+if __name__ == "__main__":
     shingle_obj = Shingle()
     shingle_obj.createShingleMapping()
     print("Shingle mapping created")
