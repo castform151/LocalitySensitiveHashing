@@ -35,6 +35,7 @@ class Reader:
     @classmethod
     def clean_line(cls, text):
         text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
+        return text
         
     
     # def lowercasify(self, data):
@@ -102,6 +103,7 @@ class Shingle:
         file = open('dataset/originals.txt', encoding='utf8')
         str = file.read()
         articles = str.split('END OF DOCUMENT')
+        self.numDocs = len(articles)
         
         for i, text in enumerate(articles):
             preprocessed_text = Reader.normalise(text)
