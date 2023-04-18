@@ -113,7 +113,7 @@ class Shingle:
                     self.shingle_dict[k_gram].append(i)
                 else:
                     self.shingle_dict[k_gram] = [i]
-        print("Time taken to create shingle mapping: ", time() - t0)
+        print("Time taken to create shingle matrix: ", time() - t0)
         
     def getJaccrdSimilarity(self, threshold, queryShingle):
         t0 = time()
@@ -261,24 +261,25 @@ class LSH:
     """Class to implement the LSH algorithm to find the similar documents
     """
     def __init__(self, rowsperBand, numofBands, signetureMatrix) -> None:
-        """Intialises LSH class
+        """Initialises LSH class
 
         Args:
             rowsperBand (int): number of rows per band in Signature Matrix
             numofBands (int): Total number of bands in Signature Matrix
-            signetureMatrix (np.ndarray): Signature matrix of all the documents in the dataset
+            signatureMatrix (np.ndarray): Signature matrix of all the documents in the dataset
         """
         self.rowsperBand = rowsperBand
         self.numofBands = numofBands
         self.signatureMatrix = signetureMatrix
         
-    def plagiarismCheck(self, threshold, querySignature):
+    def getSignatureSimilarity(self, threshold, querySignature):
         """Checks for plagiarism of query documnet in the dataset
 
         Args:
             threshold (float): threshold for similarity between query document and the documents in the dataset
             querySignature (np.ndarray): signature vector of the query document
         """
+        t0 = time()
         print("Using LSH on Signature Matrix")
         simBand = 0
         for i in range(self.signatureMatrix.shape[1]):
@@ -290,6 +291,7 @@ class LSH:
             sim = simBand/self.numofBands
             if sim >= threshold:
                 print(f"Similarity of {sim} with documnet {i}")
+        print("Time taken to find similar documents using LSH: ", time() - t0)
  
 class Query:
     """Class to generate the query shingle vector and the query signature
@@ -302,7 +304,8 @@ class Query:
             Shingle (Shingle): Instance of Shingle class
             MinHash (MinHash): Instance of MinHash class
         """
-        query_path = query_path + os.listdir(query_path)[0]
+        query_path = query_path + os.listdir(query_path)[q]
+        print(f"For {query_path}")
         query_file = open(query_path, encoding='utf8')
         # reader_obj = Reader()
         # preprocessed_text = reader_obj.preprocess_data(query_file.read())
@@ -351,7 +354,8 @@ min_hash_obj.fillSignatureMatrix()
 print("fill signature matrix")
 # print(min_hash_obj.signatureMatrix)
 lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
-query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj)
-lsh_obj.plagiarismCheck(0.5, query_obj.getQuerySignature())
-shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
+for q in range(5):
+    query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
+    lsh_obj.getSignatureSimilarity(0.5, query_obj.getQuerySignature())
+    shingle_obj.getJaccrdSimilarity(query_obj.shingle_vec)
 # print(shin_dict)
