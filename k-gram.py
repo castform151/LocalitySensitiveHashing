@@ -1,3 +1,4 @@
+from scipy.spatial import distance
 import numpy as np
 import os
 import random
@@ -9,7 +10,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
 flag = 0
-from scipy.spatial import distance
+
 
 class Reader:
 
@@ -76,7 +77,6 @@ class Shingle:
         # return kgrams
         k_grams = ngrams(text.split(), 3)
         return set(k_grams)
-        
 
     def createShingleMapping(self):
         """Cretaes a dictionary of k-shingles and the list of documents they are present in
@@ -114,7 +114,7 @@ class Shingle:
 
     def getJaccrdSimilarity(self, threshold, queryShingle):
         t0 = time()
-        shin_arr = np.zeros(len(self.shingle_dict), dtype = 'bool')
+        shin_arr = np.zeros(len(self.shingle_dict), dtype='bool')
         for i in queryShingle:
             shin_arr[i] = True
         global flag
@@ -124,7 +124,7 @@ class Shingle:
         for i in range(self.shingleDocMatrix.shape[1]):
             # print(len(shin_arr))
             # print(len(self.shingleDocMatrix[:,i]))
-            sim = 1 -  distance.jaccard(shin_arr, self.shingleDocMatrix[:,i])
+            sim = 1 - distance.jaccard(shin_arr, self.shingleDocMatrix[:, i])
             print(sim)
             if sim >= threshold:
                 flag = 1
@@ -134,7 +134,8 @@ class Shingle:
         print("Time taken to find similarity using Jaccard: ", time() - t0)
 
     def createMatrix(self):
-        self.shingleDocMatrix = np.zeros((len(self.shingle_dict), self.numDocs), dtype = 'bool')
+        self.shingleDocMatrix = np.zeros(
+            (len(self.shingle_dict), self.numDocs), dtype='bool')
         for i, shingle in enumerate(self.shingle_dict.keys()):
             for docID in self.shingle_dict[shingle]:
                 self.shingleDocMatrix[i][docID] = True
@@ -162,7 +163,7 @@ class MinHash:
         # self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
         # self.coeffB = self.pickRandomCoeffs(numofHashFuncs)
         self.signatureMatrix = np.full(
-             (numofHashFuncs, numofDocs), self.maxShingles)
+            (numofHashFuncs, numofDocs), self.maxShingles)
         self.coeffA = self.true_permutation(numofHashFuncs)
         self.coeffB = self.true_permutation(numofHashFuncs)
 
@@ -318,7 +319,7 @@ class LSH:
             for j in range(self.numofBands):
                 if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand, i], querySignature[j:j+self.rowsperBand]):
                     simBand += 1
-            # print(simBand/self.numofBands)
+            print(simBand)
             sim = simBand/self.numofBands
             if sim >= threshold:
                 flag = 1
@@ -392,7 +393,7 @@ if __name__ == "__main__":
     min_hash_obj.fillSignatureMatrix()
     print("fill signature matrix")
     # print(min_hash_obj.signatureMatrix)
-    lsh_obj = LSH(10, 20, min_hash_obj.signatureMatrix)
+    lsh_obj = LSH(2, 100, min_hash_obj.signatureMatrix)
     threshold = 0.5
     for q in range(5):
         query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
