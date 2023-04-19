@@ -1,28 +1,62 @@
-But that's irrelevant to the problem here.  Windows came with my
-system, but on 5.25" disks.  I hate using 5.25" disks, so I copied
-them over to high density 3.5"'s using xcopy.  It worked fine.  In
-fact, for a while I was changing configurations and whatnot so much
-that I decided to try putting them on the hard disk.  Not only can you
-copy them over with one disk per directory, but if you want to, you
-can simply copy them all into one directory.  Makes it a lot nicer
-when you're switching printer emulations around.
-Norton 6.0 I don't have much experience with, but when a friend's
-system crashed, we restored from a backup rather than from the
-originals, and it worked fine.  This would imply that arj a -r norton
-c:\nu would create a workable backup, and if you did a full install
-the first time, you've got the whole thing.
-Never played with WP for Windows; I'm not too big of a fan of anything
-from Utah.
-Good luck....
-Disclaimer: Don't Copy That Floppy! (tm) Just Say No! (r) Respect Your Elders!
-For The Wages Of Sin Is (sic) Death And A Hefty Legal Bill!  DO YOU OFFEND?
-Rob
---
-Rob kudla@acm.rpi.edu Keywords - Oldfield Jane's Leather Yes Win3.1 Phish
-light blue right Bondage r.e.m. DTP Steely Dan DS9 FNM OWL Genesis In the
-spaceship, the silver spaceship, the lion takes control..... 
-
-I'm sorry, but as of my knowledge cutoff date of September 2021, there is no information available on the architecture or release of GPT-4. At the moment, GPT-3 remains the latest and most advanced language model developed by OpenAI.
-However, based on previous advancements and improvements made in each iteration of GPT models, it can be speculated that GPT-4 would likely be an even more powerful language model with a larger training dataset, improved training techniques, and potentially new architectural features.
-It's important to keep in mind that developing a new language model like GPT-4 can take a significant amount of time and resources
-
+From: tgk@cs.toronto.edu (Todd Kelley)
+Subject: Re: Faith and Dogma
+marshall@csugrad.cs.vt.edu (Kevin Marshall) <1r2eba$hsq@csugrad.cs.vt.edu>
+wrote:
+>I don't necessarily disagree with your assertion, but I disagree with
+>your reasoning.  (Faith = Bad.  Dogma = Bad.  Religion -> (Faith ^ Dogma).
+>Religion -> (Bad ^ Bad).  Religion -> Bad.)  Unfortunately, you never 
+>state why faith and dogma are dangerous.  
+Faith and dogma are dangerous because they cause people to act on
+faith alone, which by its nature is without justification.  That
+is what I mean by the word ``faith'': belief without justification, or
+belief with arbitrary justification, or with emotional (irrational)
+justification.
+For example, when someone says that God exists, that they don't know
+why they believe God exists, they can just feel it, that's faith.
+Dogma is bad because it precludes positive change in belief based
+on new information, or increased mental faculty.
+>So Christians are totally irrational?  Irrational with respect to their
+>religion only?  What are you saying?  One's belief in a Christian God does
+>not make one totally irrational.  I think I know what you were getting at,
+>but I'd rather hear you expand on the subject.
+Faith and dogma are irrational.  The faith and dogma part of any religion
+are responsible for the irrationality of the individuals.  I claim that
+faith and dogma are the quintessential part of any religion.  If that
+makes (the much overused in this context) Buddism a philosophy rather
+than a religion, I can live with that.  Science is not a religion,
+because there is no faith nor dogma.
+>>A philosopher cannot be a Christian because a philosopher can change his mind,
+>>whereas a Christian cannot, due to the nature of faith and dogma present
+>>in any religion.
+>Again, this statement is too general.  A Christian is perfectly capable of
+>being a philosopher, and absolutely capable of changing his/her mind.  Faith in
+>God is a belief, and all beliefs may change.  Would you assert that atheists
+>would make poor philosophers because they are predisposed to not believe in a
+>God which, of course, may show unfair bias when studying, say, religion?
+Have you noticed that philosophers tend to be atheists?  If a philosopher
+is not an atheist, s/he tends to be called a theologian.
+A Christian tends to consider Christianity sacred.  Christianity is
+a special set of beliefs, sanctioned by God himself, and therefore,
+to conceive of changing those beliefs is to question the existence
+of That Being Who Makes No Mistakes.  Faith comes into play.  Dogma
+comes into play.  ``The lord works in mysterious ways'' is an example
+of faith being used to reconcile evidence that the beliefs are flawed.
+Sure, interpretations of what ``God said'' are changed to satisfy the
+needs of society, but when God says something, that's it.  It was said,
+and that's that.  Since God said it, it is unflawed, even if the
+interpretations are flawed.
+Science, (as would be practiced by atheists) in contrast, has a
+BUILT IN defence against faith and dogma.
+A scientist holds sacred the idea that beliefs should change to
+suit whatever is the best information available at the time, AND,
+*AND*, ****AND***, a scientist understands that any current beliefs
+are deficient in some way.  The goal is to keep improving
+the beliefs.  The goal is to keep changing the beliefs to reflect
+the best information currently available.  That's the only rational
+thing to do.  That's good philosophy
+Can you see the difference?  Science views beliefs as being flawed,
+and new information can be obtained to improve them.  (How many
+scientists would claim to have complete and perfect understanding
+of everything?  None---it would put them out of a job!)  Religion
+views its beliefs as being perfect, and the interpretations of
+those beliefs must be changed as new information is acquired which

@@ -32,26 +32,6 @@ class Reader:
         text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", " ", text)
         return text
 
-    # def lowercasify(self, data):
-    #     return data.lower()
-
-    # def clean_text(self,text):
-    #     text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
-
-    #     # Tokenize the cleaned text
-    #     words = word_tokenize(text)
-
-    #     return words
-
-    # def preprocess_data(self, data):
-    #     clean_data = ''
-    #     words = self.clean_text(self.lowercasify(data))
-    #     # print(words)
-    #     for word in words:
-    #         clean_data += word + ' '
-    #     return clean_data
-
-
 class Shingle:
 
     def __init__(self) -> None:
@@ -71,10 +51,6 @@ class Shingle:
         Returns:
             set(): set of chracaterwise k-grams of length k made from text
         """
-        # kgrams = set()
-        # for i in range(len(text) - k + 1):
-        #     kgrams.add(text[i:i+k])
-        # return kgrams
         k_grams = ngrams(text.split(), 3)
         return set(k_grams)
 
@@ -82,20 +58,7 @@ class Shingle:
         """Cretaes a dictionary of k-shingles and the list of documents they are present in
         """
         t0 = time()
-        # for root,dir,files in os.walk('Originals'):
-        #     self.numDocs = len(files)
-        #     for i, file in enumerate(files):
-        #         # if (file[0] == '7'):
-        #         txt_file = open(os.path.join(root,file),encoding='utf-8')
-        #         text = txt_file.read()
-        #         reader_obj = Reader()
-        #         preprocessed_text = reader_obj.preprocess_data(text)
-        #         k_grams = self.make_kgrams(preprocessed_text, 9)
-        #         for k_gram in k_grams:
-        #             if k_gram in self.shingle_dict.keys():
-        #                 self.shingle_dict[k_gram].append(i)
-        #             else:
-        #                 self.shingle_dict[k_gram] = [i]
+
         file = open('dataset/originals.txt', encoding='utf-8', errors="ignore")
         str = file.read()
         articles = str.split('END OF DOCUMENT')
@@ -113,6 +76,12 @@ class Shingle:
         print("Time taken to create shingle matrix: ", time() - t0)
 
     def getJaccrdSimilarity(self, threshold, queryShingle):
+        """Checks if Jaccard similarity of queryShingle and any Documents from corpus is greater than threshold
+
+        Args:
+            threshold (float): Threshold in fraction. Documnts with similarity greater than this value are printed
+            queryShingle (list[]): list of indices of shingles present in query document
+        """
         t0 = time()
         shin_arr = np.zeros(len(self.shingle_dict), dtype='bool')
         for i in queryShingle:
@@ -125,7 +94,7 @@ class Shingle:
             # print(len(shin_arr))
             # print(len(self.shingleDocMatrix[:,i]))
             sim = 1 - distance.jaccard(shin_arr, self.shingleDocMatrix[:, i])
-            print(sim)
+            # print(sim)
             if sim >= threshold:
                 flag = 1
                 print(f"Similarity of {sim*100}% with documnet {i}")
@@ -134,6 +103,8 @@ class Shingle:
         print("Time taken to find similarity using Jaccard: ", time() - t0)
 
     def createMatrix(self):
+        """Creates shingle-document matrix from dict 
+        """
         self.shingleDocMatrix = np.zeros(
             (len(self.shingle_dict), self.numDocs), dtype='bool')
         for i, shingle in enumerate(self.shingle_dict.keys()):
@@ -157,7 +128,7 @@ class MinHash:
         self.numofDocs = numofDocs
         self.numofHashFuncs = numofHashFuncs
         self.maxShingles = len(shingle_dict)
-        self.nextPrime = self.getSmallestPrime(self.maxShingles)
+        # self.nextPrime = self.getSmallestPrime(self.maxShingles)
         # self.signatureMatrix = np.full(
         #     (numofHashFuncs, numofDocs), self.nextPrime)
         # self.coeffA = self.pickRandomCoeffs(numofHashFuncs)
@@ -167,60 +138,84 @@ class MinHash:
         self.coeffA = self.true_permutation(numofHashFuncs)
         self.coeffB = self.true_permutation(numofHashFuncs)
 
-    def getSmallestPrime(self, n):
-        """Get the smallest prime number greater than n
+    # def getSmallestPrime(self, n):
+    #     """Get the smallest prime number greater than n
 
-        Args:
-            n (int): number greater than which the smallest prime number is to be found
+    #     Args:
+    #         n (int): number greater than which the smallest prime number is to be found
 
-        Returns:
-            int: smallest prime number greater than n
-        """
-        def miller_rabin(n, k):
-            """Implements Probabilistic Primality Test using Miller-Rabin Test
+    #     Returns:
+    #         int: smallest prime number greater than n
+    #     """
+    #     def miller_rabin(n, k):
+    #         """Implements Probabilistic Primality Test using Miller-Rabin Test
 
-            Args:
-                n (int): primality of this number is to be tested
-                k (int): Miller-Rabin test is run for k iterations
+    #         Args:
+    #             n (int): primality of this number is to be tested
+    #             k (int): Miller-Rabin test is run for k iterations
 
-            Returns:
-                bool: False if n is composite, True if n is probably prime
-            """
-            # Implementation uses the Miller-Rabin Primality Test
-            # The optimal number of rounds for this test is 40
-            # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
-            # for justification
+    #         Returns:
+    #             bool: False if n is composite, True if n is probably prime
+    #         """
+    #         # Implementation uses the Miller-Rabin Primality Test
+    #         # The optimal number of rounds for this test is 40
+    #         # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
+    #         # for justification
 
-            if n == 2:
-                return True
+    #         if n == 2:
+    #             return True
 
-            elif n % 2 == 0:
-                return False
+    #         elif n % 2 == 0:
+    #             return False
 
-            r, s = 0, n - 1
-            while s % 2 == 0:
-                r += 1
-                s //= 2
-            for _ in range(k):
-                a = random.randrange(2, n - 1)
-                x = pow(a, s, n)
-                if x == 1 or x == n - 1:
-                    continue
-                for _ in range(r - 1):
-                    x = pow(x, 2, n)
-                    if x == n - 1:
-                        break
-                else:
-                    return False
-            return True
-        t0 = time()
-        while True:
-            if miller_rabin(n, 40):
-                print(f"Time taken to find next prime {n}: ", time() - t0)
-                return n
-            n += 1
+    #         r, s = 0, n - 1
+    #         while s % 2 == 0:
+    #             r += 1
+    #             s //= 2
+    #         for _ in range(k):
+    #             a = random.randrange(2, n - 1)
+    #             x = pow(a, s, n)
+    #             if x == 1 or x == n - 1:
+    #                 continue
+    #             for _ in range(r - 1):
+    #                 x = pow(x, 2, n)
+    #                 if x == n - 1:
+    #                     break
+    #             else:
+    #                 return False
+    #         return True
+    #     t0 = time()
+    #     while True:
+    #         if miller_rabin(n, 40):
+    #             print(f"Time taken to find next prime {n}: ", time() - t0)
+    #             return n
+    #         n += 1
 
-    def pickRandomCoeffs(self, k):
+    # def pickRandomCoeffs(self, k):
+    #     """Pick k random coefficients for the random hash functions.
+
+    #     Args:
+    #         k (int): number of random coefficients to be picked
+
+    #     Returns:
+    #         list: list of k random coefficients
+    #     """
+    #     t0 = time()
+    #     randList = []
+    #     while k > 0:
+    #         randIndex = random.randint(1, self.maxShingles)
+
+    #         # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
+    #         while (randIndex in randList or gcd(randIndex, self.nextPrime) != 1):
+    #             randIndex = random.randint(1, self.maxShingles)
+
+    #         randList.append(randIndex)
+    #         k = k - 1
+    #     print("Time taken to pick random coefficients: ", time() - t0)
+    #     print(randList)
+    #     return randList
+
+    def true_permutation(self, k):
         """Pick k random coefficients for the random hash functions.
 
         Args:
@@ -235,29 +230,13 @@ class MinHash:
             randIndex = random.randint(1, self.maxShingles)
 
             # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
-            while (randIndex in randList and gcd(randIndex, self.nextPrime) != 1):
-                randIndex = random.randint(1, self.maxShingles)
-
-            randList.append(randIndex)
-            k = k - 1
-        print("Time taken to pick random coefficients: ", time() - t0)
-        print(randList)
-        return randList
-
-    def true_permutation(self, k):
-        t0 = time()
-        randList = []
-        while k > 0:
-            randIndex = random.randint(1, self.maxShingles)
-
-            # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
             while (randIndex in randList or gcd(randIndex, self.maxShingles) != 1):
                 randIndex = random.randint(1, self.maxShingles)
 
             randList.append(randIndex)
             k = k - 1
         print("Time taken to pick random coefficients: ", time() - t0)
-        print(randList)
+        # print(randList)
         return randList
 
     def Hash(self, shingleIndex, HashFuncNum):
@@ -319,11 +298,11 @@ class LSH:
             for j in range(self.numofBands):
                 if np.array_equal(self.signatureMatrix[j:j+self.rowsperBand, i], querySignature[j:j+self.rowsperBand]):
                     simBand += 1
-            print(simBand)
+            # print(simBand)
             sim = simBand/self.numofBands
             if sim >= threshold:
                 flag = 1
-                print(f"Similarity of {sim} with documnet {i}")
+                print(f"Similarity of {sim*100}% with documnet {i}")
         if flag == 0:
             print("No similar document found using LSH")
         print("Time taken to find similar documents using LSH: ", time() - t0)
@@ -374,7 +353,7 @@ class Query:
         """
         # queryShingleVec = self.getQueryShingleVec()
         querySignature = np.full(
-            (self.MinHashObj.numofHashFuncs), self.MinHashObj.nextPrime)
+            (self.MinHashObj.numofHashFuncs), self.MinHashObj.maxShingles)
         for i in self.shingle_vec:
             for j in range(self.MinHashObj.numofHashFuncs):
                 _temp = self.MinHashObj.Hash(i, j)
@@ -385,19 +364,33 @@ class Query:
 
 
 if __name__ == "__main__":
+    threshold = float(input("Enter the threshold: "))
+    
     shingle_obj = Shingle()
     # shingle_obj.createShingleMapping()
-    print("Shingle mapping created")
+    # print("Shingle mapping created")
     shin_dict = shingle_obj.shingle_dict
+    
+    # Change number of Hash Functions here
     min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 200)
+    
     min_hash_obj.fillSignatureMatrix()
-    print("fill signature matrix")
+    # print("fill signature matrix")
     # print(min_hash_obj.signatureMatrix)
-    lsh_obj = LSH(2, 100, min_hash_obj.signatureMatrix)
-    threshold = 0.5
-    for q in range(5):
+    
+    #Change number of hash functions per band and number of band here
+    lsh_obj = LSH(5, 40, min_hash_obj.signatureMatrix)
+    
+    for q in range(1):
         query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
         lsh_obj.getSignatureSimilarity(
             threshold, query_obj.getQuerySignature())
         shingle_obj.getJaccrdSimilarity(threshold, query_obj.shingle_vec)
     # print(shin_dict)
+    # lsh_obj = LSH(10, 20, min_hash_obj.signatureMatrix)
+    # threshold = 0.1
+    # for q in range(1):
+    #     query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)
+    #     lsh_obj.getSignatureSimilarity(
+    #         threshold, query_obj.getQuerySignature())
+    #     shingle_obj.getJaccrdSimilarity(threshold, query_obj.shingle_vec)

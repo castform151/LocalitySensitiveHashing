@@ -1,46 +1,50 @@
-Define perfect then.
- 
- 
->> I think you
->> are playing the usual game here, make sweeping statements like omni-,
->> holy, or perfect, and don't note that they mean exactly what they say.
->> And that says that you must not use this terms when it leads to
->> contradictions.
->
->I'm not trying to play games here.  But I understand how it might seem
->that way especially when one is coming from a completely different point
->of view such as atheism.
->
- 
-Take your foot out of your mouth, I wondered about that already when I
-was a Catholic Christian. The fact that the contradiction is unresolvable
-is one of the reasons why I am an atheist.
- 
-Believe me, I believed similar sentences for a long time. But that shows
-the power of religion and not anything about its claims.
->>>Now God could have prevented Lucifer's fall by taking away his ability
->>>to choose between moral alternatives (worship God or worship himself),
->>>but that would mean that God was in error to have make Lucifer or any
->>>being with free will in the first place.
->>
->> Exactly. God allows evil, an evil if there ever was one.
->>
->
->Now that's an opinion, or at best a premise.  But from my point of view,
->it is not a premise which is necessary true, specifically, that it is
->an evil to allow evil to occur.
->
- 
-It follows from a definition of evil as ordinarily used. Letting evil
-happen or allowing evil to take place, in this place even causing evil,
-is another evil.
+From: sloan@cis.uab.edu (Kenneth Sloan)
+Subject: Re: More gray levels out of the screen
 
->I don't understand the point of this petty sarcasm. It is a basic
->principle of Islam that if one is born muslim or one says "I testify
->that there is no god but God and Mohammad is a prophet of God" that,
->so long as one does not explicitly reject Islam by word then one _must_
->be considered muslim by all muslims. So the phenomenon you're attempting
->to make into a general rule or psychology is a direct odds with basic
->Islamic principles. If you want to attack Islam you could do better than
->than to argue against something that Islam explicitly contradicts.
+In article <C51C4r.BtG@csc.ti.com> rowlands@hc.ti.com (Jon Rowlands) writes:
 >
+>A few years ago a friend and I took some 256 grey-level photos from
+>a 1 bit Mac Plus screen using this method. Displaying all 256 levels
+>synchronized to the 60Hz display took about 10 seconds.
+
+Why didn't you create 8 grey-level images, and display them for
+1,2,4,8,16,32,64,128... time slices?
+
+This requires the same total exposure time, and the same precision in
+timing, but drastically reduces the image-preparation time, no?
+
+
+
+
+
+
+-- 
+Kenneth Sloan                   Computer and Information Sciences
+sloan@cis.uab.edu               University of Alabama at Birmingham
+(205) 934-2213                  115A Campbell Hall, UAB Station 
+(205) 934-5473 FAX              Birmingham, AL 35294-1170
+
+END OF DOCUMENT
+From: lex@optimla.aimla.com (Lex van Sonderen)
+Subject: Re: Rumours about 3DO ???
+
+In article <h1p4s4g@zola.esd.sgi.com> erik@westworld.esd.sgi.com (Erik Fortune) writes:
+>> better than CDI
+>*Much* better than CDI.
+Of course, I do not agree.  It does have more horsepower.  Horsepower is not
+the only measurement for 'better'.  It does not have full motion, full screen
+video yet.  Does it have CD-ROM XA?
+
+>> starting in the 4 quarter of 1993
+>The first 3DO "multiplayer" will be manufactured by panasonic and will be 
+>available late this year.   A number of other manufacturers are reported to 
+>have 3DO compatible boxes in the works.
+Which other manufacturers?
+We shall see about the date.
+
+>All this information is third hand or so and worth what you paid for it:-).
+This is second hand, but it still hard to look to the future ;-).
+
+Lex van Sonderen
+lex@aimla.com
+Philips Interactive Media

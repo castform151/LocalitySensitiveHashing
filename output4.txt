@@ -1,0 +1,89 @@
+Time taken to create shingle matrix:  0.5938479900360107
+Shingle mapping created
+Time taken to find next prime 198589:  0.00016450881958007812
+Time taken to pick random coefficients:  0.00047588348388671875
+[145650, 99625, 30772, 131856, 163950, 191, 100303, 20295, 137640, 11872, 93250, 32473, 74641, 191890, 182424, 56382, 85030, 38540, 176405, 33765, 796, 154575, 184239, 131154, 50100, 62376, 108014, 125758, 176068, 96734, 181070, 188623, 185319, 162907, 41850, 102194, 78340, 63152, 195322, 180332, 157619, 167488, 195374, 75268, 70648, 134851, 149796, 131668, 66796, 130231, 25817, 24367, 190693, 140537, 148344, 160726, 101055, 146892, 3104, 51287, 171143, 55833, 166817, 155616, 161335, 41621, 184648, 44493, 19325, 130644, 154277, 145664, 114643, 74883, 186818, 164947, 97439, 58274, 196854, 64571, 116454, 84534, 104457, 86119, 77729, 87970, 95844, 76702, 17589, 119593, 166573, 173746, 153555, 153397, 131813, 187433, 180853, 138171, 15183, 157876, 13280, 182446, 64089, 90759, 39880, 12713, 185330, 185648, 74347, 184867, 102920, 167905, 71248, 116998, 116018, 63519, 177543, 5811, 127372, 118542, 192286, 73176, 120106, 49778, 196042, 160714, 32962, 93011, 4473, 34843, 165417, 144607, 69116, 75975, 98985, 103857, 75741, 133370, 196449, 14623, 165687, 55960, 77678, 99970, 117234, 57039, 13080, 121681, 170193, 194433, 193287, 150801, 31653, 94830, 31521, 6696, 45707, 19396, 57006, 56788, 6667, 75295, 152958, 166606, 177754, 149040, 37527, 36811, 60364, 112579, 67689, 32652, 85689, 671, 46759, 150344, 138604, 170179, 27954, 149504, 5320, 197922, 142725, 112569, 122589, 158251, 43967, 136740, 68900, 160821, 117288, 9162, 68810, 186985, 111075, 107415, 145935, 196371, 24291, 34439]
+Time taken to pick random coefficients:  0.000461578369140625
+[119832, 55864, 112019, 187771, 8756, 54279, 132918, 148581, 85995, 73089, 150966, 158765, 129504, 89810, 177829, 77700, 83830, 188829, 92015, 172611, 100475, 103592, 25690, 155995, 134433, 45125, 9508, 178425, 156857, 81201, 63795, 19552, 85226, 159417, 127074, 69994, 192742, 151627, 27410, 45278, 70560, 120671, 116676, 53817, 22920, 68057, 168097, 70865, 123438, 90207, 135295, 97922, 3416, 180700, 32672, 10669, 195487, 119934, 60764, 16105, 181722, 191031, 50222, 6376, 128255, 84597, 85800, 95781, 113692, 158547, 6927, 122642, 38394, 112706, 142569, 184507, 36594, 127202, 10951, 48898, 116081, 111314, 124409, 150283, 34230, 73120, 82259, 172908, 19928, 41169, 126654, 74818, 156456, 165744, 25390, 191425, 78531, 196365, 179243, 171612, 171736, 9289, 132017, 123681, 45092, 183998, 32132, 2214, 34033, 91631, 163921, 165283, 193884, 169069, 54474, 22620, 113379, 66648, 127146, 95237, 58613, 42243, 99676, 101667, 6280, 157447, 45516, 167088, 109026, 73858, 53697, 55037, 182402, 125846, 100544, 32668, 80213, 187866, 196072, 115903, 36820, 185052, 133126, 192030, 182759, 49930, 36020, 162825, 123019, 123389, 27306, 107589, 49094, 150902, 50336, 159554, 196497, 90913, 173709, 522, 93213, 77676, 180248, 196346, 21177, 186003, 147918, 14056, 82555, 12702, 1548, 13332, 152399, 142716, 6033, 163598, 155979, 7919, 98261, 152690, 56415, 128049, 35600, 115527, 98351, 53092, 65625, 12394, 118917, 1558, 139164, 144603, 14313, 164711, 10120, 151594, 52316, 127926, 27261, 109992]
+Time taken to fill signature matrix:  33.30287981033325
+fill signature matrix
+For Query_Doc/query1.txt
+Using LSH on Signature Matrix
+Similarity of 87.5% with documnet 22
+Time taken to find similar documents using LSH:  0.1298518180847168
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 96.81197137280417% with documnet 22
+Time taken to find similarity using Jaccard:  2.769146680831909
+For Query_Doc/query2.txt
+Using LSH on Signature Matrix
+Similarity of 87.5% with documnet 22
+Time taken to find similar documents using LSH:  0.12454795837402344
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 92.06245933636956% with documnet 22
+Time taken to find similarity using Jaccard:  2.7393476963043213
+For Query_Doc/query3.txt
+Using LSH on Signature Matrix
+Similarity of 27.500000000000004% with documnet 808
+Time taken to find similar documents using LSH:  0.12253308296203613
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 48.25174825174825% with documnet 808
+Similarity of 51.74825174825175% with documnet 809
+Similarity of 33.48946135831382% with documnet 812
+Similarity of 10.397553516819569% with documnet 831
+Time taken to find similarity using Jaccard:  2.9066109657287598
+For Query_Doc/query4.txt
+Using LSH on Signature Matrix
+Similarity of 15.0% with documnet 477
+Time taken to find similar documents using LSH:  0.12566161155700684
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 16.502242152466373% with documnet 456
+Similarity of 84.21768707482993% with documnet 477
+Similarity of 10.076775431861806% with documnet 737
+Time taken to find similarity using Jaccard:  2.733041524887085
+For Query_Doc/query5.txt
+Using LSH on Signature Matrix
+Similarity of 40.0% with documnet 84
+Time taken to find similar documents using LSH:  0.12258505821228027
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 91.49560117302052% with documnet 84
+Time taken to find similarity using Jaccard:  2.7452900409698486
+For Query_Doc/query1.txt
+Using LSH on Signature Matrix
+Similarity of 60.0% with documnet 22
+Time taken to find similar documents using LSH:  0.06260228157043457
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 96.81197137280417% with documnet 22
+Time taken to find similarity using Jaccard:  2.784971237182617
+For Query_Doc/query2.txt
+Using LSH on Signature Matrix
+Similarity of 60.0% with documnet 22
+Time taken to find similar documents using LSH:  0.07056045532226562
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 92.06245933636956% with documnet 22
+Time taken to find similarity using Jaccard:  2.8373184204101562
+For Query_Doc/query3.txt
+Using LSH on Signature Matrix
+Similarity of 20.0% with documnet 808
+Time taken to find similar documents using LSH:  0.06342530250549316
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 48.25174825174825% with documnet 808
+Similarity of 51.74825174825175% with documnet 809
+Similarity of 33.48946135831382% with documnet 812
+Similarity of 10.397553516819569% with documnet 831
+Time taken to find similarity using Jaccard:  2.7493646144866943
+For Query_Doc/query4.txt
+Using LSH on Signature Matrix
+No similar document found using LSH
+Time taken to find similar documents using LSH:  0.06221461296081543
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 16.502242152466373% with documnet 456
+Similarity of 84.21768707482993% with documnet 477
+Similarity of 10.076775431861806% with documnet 737
+Time taken to find similarity using Jaccard:  2.7403507232666016
+For Query_Doc/query5.txt
+Using LSH on Signature Matrix
+Similarity of 10.0% with documnet 84
+Time taken to find similar documents using LSH:  0.06068706512451172
+Using Jaccard Similarity on Shingle Matrix
+Similarity of 91.49560117302052% with documnet 84
+Time taken to find similarity using Jaccard:  2.734067440032959
