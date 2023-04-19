@@ -1,25 +1,14 @@
 import numpy as np
-# import pandas as pd
 import os
 import random
-# import string
 import re
 from nltk import word_tokenize
-# import unicodedata
 from math import gcd
 from time import time
 from nltk.corpus import stopwords
-# from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
+from nltk.util import ngrams
 flag = 0
-# class Document:
-
-#     def similarity(self,doc1,doc2):
-#         ctr=0
-#         for i in range(len(doc1)):
-#             ctr+= doc1[i]==doc2[i]
-#         return ctr/len(doc1)
-
 
 class Reader:
 
@@ -28,10 +17,11 @@ class Reader:
         stop_words = set((stopwords.words("english")))
         query = cls.clean_line(query)
         tokens = word_tokenize(query.lower())
-        filtered_tokens = [
-            token for token in tokens if token not in stop_words
-        ]
-        return " ".join(filtered_tokens)
+        # filtered_tokens = [
+        #     token for token in tokens if token not in stop_words
+        # ]
+        # return " ".join(filtered_tokens)
+        return " ".join(tokens)
 
     @classmethod
     def clean_line(cls, text):
@@ -77,10 +67,13 @@ class Shingle:
         Returns:
             set(): set of chracaterwise k-grams of length k made from text
         """
-        kgrams = set()
-        for i in range(len(text) - k + 1):
-            kgrams.add(text[i:i+k])
-        return kgrams
+        # kgrams = set()
+        # for i in range(len(text) - k + 1):
+        #     kgrams.add(text[i:i+k])
+        # return kgrams
+        k_grams = ngrams(text.split(), 3)
+        return set(k_grams)
+        
 
     def createShingleMapping(self):
         """Cretaes a dictionary of k-shingles and the list of documents they are present in
@@ -359,7 +352,7 @@ class Query:
             list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
         queryShingles = self.ShingleObj.make_kgrams(self.query, 2)
-        print(queryShingles)
+        # print(queryShingles)
         self.shingle_vec = []
         for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
             if shingle in queryShingles:
@@ -390,11 +383,11 @@ if __name__ == "__main__":
     # shingle_obj.createShingleMapping()
     print("Shingle mapping created")
     shin_dict = shingle_obj.shingle_dict
-    min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 50)
+    min_hash_obj = MinHash(shin_dict, shingle_obj.numDocs, 200)
     min_hash_obj.fillSignatureMatrix()
     print("fill signature matrix")
     # print(min_hash_obj.signatureMatrix)
-    lsh_obj = LSH(5, 10, min_hash_obj.signatureMatrix)
+    lsh_obj = LSH(10, 20, min_hash_obj.signatureMatrix)
     threshold = 0.5
     for q in range(5):
         query_obj = Query("Query_Doc/", shingle_obj, min_hash_obj, q)

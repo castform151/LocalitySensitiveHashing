@@ -11,7 +11,7 @@ fp = open('dataset/pre_processed.txt', 'w')
 
 k = 0
 for i in df.itertuples():
-    if k > 96:
+    if k > 10:
         break
     fo.writelines(f'{i[2]}\nEND OF DOCUMENT\n')
     fp.writelines(f'{i[3]}\n####\n')
