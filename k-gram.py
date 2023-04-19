@@ -2,13 +2,14 @@ import numpy as np
 import os
 import random
 import re
-from nltk import word_tokenize
+# from nltk import word_tokenize
 from math import gcd
 from time import time
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
 flag = 0
+from scipy.spatial import distance
 
 class Reader:
 
@@ -16,16 +17,18 @@ class Reader:
     def normalise(cls, query):
         stop_words = set((stopwords.words("english")))
         query = cls.clean_line(query)
-        tokens = word_tokenize(query.lower())
+        # tokens = word_tokenize(query.lower())
+        tokens = query.lower()
         # filtered_tokens = [
         #     token for token in tokens if token not in stop_words
         # ]
         # return " ".join(filtered_tokens)
-        return " ".join(tokens)
+        # return " ".join(tokens)
+        return tokens
 
     @classmethod
     def clean_line(cls, text):
-        text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", "", text)
+        text = re.sub(r"[^a-zA-Z0-9 \n\r\t]", " ", text)
         return text
 
     # def lowercasify(self, data):
@@ -106,21 +109,23 @@ class Shingle:
                     self.shingle_dict[k_gram].append(i)
                 else:
                     self.shingle_dict[k_gram] = [i]
-        print(self.shingle_dict)
+        # print(self.shingle_dict)
         print("Time taken to create shingle matrix: ", time() - t0)
 
     def getJaccrdSimilarity(self, threshold, queryShingle):
         t0 = time()
-        
+        shin_arr = np.zeros(len(self.shingle_dict), dtype = 'bool')
+        for i in queryShingle:
+            shin_arr[i] = True
         global flag
         flag = 0
-        query_shin_set = set(queryShingle)
+        # query_shin_set = set(queryShingle)
         print("Using Jaccard Similarity on Shingle Matrix")
-        for i, j in self.shingle_dict.items():
-            doc_shin_set = set(j)
-            aib = len(query_shin_set.intersection(doc_shin_set))
-            aub = len(query_shin_set.union(doc_shin_set))
-            sim = aib/aub
+        for i in range(self.shingleDocMatrix.shape[1]):
+            # print(len(shin_arr))
+            # print(len(self.shingleDocMatrix[:,i]))
+            sim = 1 -  distance.jaccard(shin_arr, self.shingleDocMatrix[:,i])
+            print(sim)
             if sim >= threshold:
                 flag = 1
                 print(f"Similarity of {sim*100}% with documnet {i}")
@@ -245,7 +250,7 @@ class MinHash:
             randIndex = random.randint(1, self.maxShingles)
 
             # Ensure that the same value is not picked twice and GCD of Modulus and Coefficient is 1
-            while (randIndex in randList and gcd(randIndex, self.maxShingles) != 1):
+            while (randIndex in randList or gcd(randIndex, self.maxShingles) != 1):
                 randIndex = random.randint(1, self.maxShingles)
 
             randList.append(randIndex)
