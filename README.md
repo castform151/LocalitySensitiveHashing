@@ -1,4 +1,4 @@
-# LocalitySensitiveHashing
+# Locality Sensitive Hashing
 
 Run `python3 hash.py` to generate subset of dataset
 
