@@ -1,7 +1,3 @@
----
-Authors: Sankalp Kulkarni, Aaditya Rathi, Akshat Oke, Rishi Poddar
-IDs: 2020A7PS1097H, 2020A7PS2191H, 2020A7PS0284H, 2020A7PS1195H
----
 # LocalitySensitiveHashing
 
 Run `python3 hash.py` to generate subset of dataset
