@@ -16,7 +16,6 @@ class Reader:
 
     @classmethod
     def normalise(cls, query):
-        stop_words = set((stopwords.words("english")))
         query = cls.clean_line(query)
         # tokens = word_tokenize(query.lower())
         tokens = query.lower()
@@ -41,8 +40,8 @@ class Shingle:
         self.createShingleMapping()
         self.createMatrix()
 
-    def make_kgrams(self, text,  k=9):
-        """Make chracterwise k-grams of length k from the text
+    def make_kgrams(self, text,  k=3):
+        """Make word-wise k-grams of length k from the text
 
         Args:
             text (str): k-grams are made from this text
@@ -51,7 +50,7 @@ class Shingle:
         Returns:
             set(): set of chracaterwise k-grams of length k made from text
         """
-        k_grams = ngrams(text.split(), 3)
+        k_grams = ngrams(text.split(), k)
         return set(k_grams)
 
     def createShingleMapping(self):
@@ -66,7 +65,7 @@ class Shingle:
 
         for i, text in enumerate(articles):
             preprocessed_text = Reader.normalise(text)
-            k_grams = self.make_kgrams(preprocessed_text, 2)
+            k_grams = self.make_kgrams(preprocessed_text, 3)
             for k_gram in k_grams:
                 if k_gram in self.shingle_dict.keys():
                     self.shingle_dict[k_gram].append(i)
@@ -89,7 +88,7 @@ class Shingle:
         global flag
         flag = 0
         # query_shin_set = set(queryShingle)
-        print("Using Jaccard Similarity on Shingle Matrix")
+        print("\nUsing Jaccard Similarity on Shingle Matrix")
         for i in range(self.shingleDocMatrix.shape[1]):
             # print(len(shin_arr))
             # print(len(self.shingleDocMatrix[:,i]))
@@ -97,7 +96,7 @@ class Shingle:
             # print(sim)
             if sim >= threshold:
                 flag = 1
-                print(f"Similarity of {sim*100}% with documnet {i}")
+                print(f"Similarity of \u001b[36m{sim*100}%\u001b[0m with documnet \u001b[32m{i}%\u001b[0m")
         if flag == 0:
             print("No similar document found using Jaccard")
         print("Time taken to find similarity using Jaccard: ", time() - t0)
@@ -289,7 +288,7 @@ class LSH:
             querySignature (np.ndarray): signature vector of the query document
         """
         t0 = time()
-        print("Using LSH on Signature Matrix")
+        print("\nUsing LSH on Signature Matrix")
         simBand = 0
         global flag
         flag = 0
@@ -302,7 +301,7 @@ class LSH:
             sim = simBand/self.numofBands
             if sim >= threshold:
                 flag = 1
-                print(f"Similarity of {sim*100}% with documnet {i}")
+                print(f"Similarity of \u001b[36m{sim*100}%\u001b[0m with documnet \u001b[32m{i}%\u001b[0m")
         if flag == 0:
             print("No similar document found using LSH")
         print("Time taken to find similar documents using LSH: ", time() - t0)
@@ -336,7 +335,7 @@ class Query:
         Returns:
             list[]: Returns the indices of the shingles in the shingle dictionary that are present in query document
         """
-        queryShingles = self.ShingleObj.make_kgrams(self.query, 2)
+        queryShingles = self.ShingleObj.make_kgrams(self.query, 3)
         # print(queryShingles)
         self.shingle_vec = []
         for i, shingle in enumerate((self.ShingleObj.shingle_dict.keys())):
@@ -352,8 +351,7 @@ class Query:
             np.ndarray: Returns the signature vector for the query document
         """
         # queryShingleVec = self.getQueryShingleVec()
-        querySignature = np.full(
-            (self.MinHashObj.numofHashFuncs), self.MinHashObj.maxShingles)
+        querySignature = np.full((self.MinHashObj.numofHashFuncs), self.MinHashObj.maxShingles)
         for i in self.shingle_vec:
             for j in range(self.MinHashObj.numofHashFuncs):
                 _temp = self.MinHashObj.Hash(i, j)
