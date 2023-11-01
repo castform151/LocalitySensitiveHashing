@@ -13,7 +13,7 @@
 
 ## Choice of Locality Sensitive Function
 Jaccard distance and corresponding LSH family of MinHash signatures was used for this. Where jaccard distnace $d(x, y)$ is
-$$ d(x, y) = 1 - \frac{x \cap y}{x \cup y} $$
+$$d(x, y) = 1 - \frac{x \cap y}{x \cup y}$$
 where $x$ represents set of shingles from a document.
 
 MinHash signatures were computed using minHash algorithm. It was ensured that hash functions used in MinHash algorithm generated unique permutations. Hash functions were randomly generaetd and varied accross each run of the programm.
@@ -22,7 +22,7 @@ MinHash signatures were computed using minHash algorithm. It was ensured that ha
 We experimented with for 3 different values of number of hash functions and 2 different values of bands per rows. Scores were averages accross 5 runs.
 
 Probablity of documents becoming candidate pairs is
-$$ p(colision) = 1 - (1 - s^r)^b $$
+$$p(colision) = 1 - (1 - s^r)^b$$
 where
 - $s$ is probablity of documents having same row in one band of signature matrix. It effectively corresponds to jaccard similarity of documents.
 - $r$ is number of rows per band.
